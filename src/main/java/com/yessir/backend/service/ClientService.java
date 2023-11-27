@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.yessir.backend.dto.ClientDataDto;
 import com.yessir.backend.model.Client;
 import com.yessir.backend.model.ClientDetail;
 import com.yessir.backend.model.ClientDetailId;
@@ -16,14 +17,7 @@ public class ClientService {
 	@Autowired
 	private ClientRepository cRepository;
 	
-	public class ClientData {
-		
-		Client client;
-		
-		ClientDetail[] clientDetails;
-	}
-	
-	public void newClientData(ClientData clientData) {
+	public void newClientData(ClientDataDto clientData) {
 		
 		String clientId = newClientId();
 		
@@ -40,6 +34,7 @@ public class ClientService {
 			ClientDetail detail = clientData.clientDetails[i];
 			
 			detail.setId(detailId);
+			detail.setStatus("1");
 		}
 	}
 	
@@ -54,7 +49,7 @@ public class ClientService {
 		
 		if (clientList.size() > 0) {
 			
-			int seq = Integer.parseInt(clientList.get(clientList.size() - 1).getClientId().substring(3, 9));
+			int seq = Integer.parseInt(clientList.get(clientList.size() - 1).getClientId().substring(3));
 			
 			return String.format("CLI%06d", seq + 1);
 			
@@ -63,5 +58,20 @@ public class ClientService {
 			return "CLI000001" ;
 			
 		}
+	}
+	
+	public Boolean guiNumberChecking(String guiNumber) {
+		
+		List<Client> clientList = (List<Client>)cRepository.findAll();
+		
+		for (Client client: clientList) {
+			
+			if (client.getGuiNumber().equals(guiNumber)) {
+				
+				return false;
+			}
+		}
+		
+		return true;
 	}
 }
